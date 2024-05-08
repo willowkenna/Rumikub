@@ -1,0 +1,97 @@
+import random
+
+class RummikubGame:
+    def __init__(self):
+        self.tiles = []
+        self.players = []
+        self.current_player = None
+        self.board = []
+
+    def initialize_tiles(self):
+        colors = ['red', 'blue', 'yellow', 'black']
+        numbers = list(range(1, 14))
+        self.tiles = [(color, number) for color in colors for number in numbers]
+
+    def shuffle_tiles(self):
+        random.shuffle(self.tiles)
+
+    def deal_tiles(self, num_players):
+        num_tiles_per_player = 14
+        for _ in range(num_players):
+            hand = []
+            for _ in range(num_tiles_per_player):
+                tile = self.tiles.pop()
+                hand.append(tile)
+            self.players.append(hand)
+
+    def initialize_board(self):
+        self.board = [[] for _ in range(4)]
+
+    def start_game(self):
+        self.initialize_tiles()
+        self.shuffle_tiles()
+        num_players = int(input("Enter the number of players: "))
+        self.deal_tiles(num_players)
+        self.initialize_board()
+        self.current_player = random.randint(0, num_players - 1)
+        print("Game started!")
+        self.display_board()
+
+    def display_board(self):
+        print("Board:")
+        for i, row in enumerate(self.board):
+            print(f"Row {i + 1}: {row}")
+        print("\n")
+
+    def display_hand(self):
+        print("Your hand:")
+        for i, tile in enumerate(self.players[self.current_player]):
+            print(f"{i + 1}: {tile}")
+        print("\n")
+
+    def play(self):
+        while True:
+            self.display_board()
+            self.display_hand()
+            print("It's player", self.current_player + 1, "'s turn.")
+            print("Options:")
+            print("1. Play a tile")
+            print("2. Draw a tile")
+            print("3. End game")
+
+            choice = int(input("Enter your choice: "))
+
+            if choice == 1:
+                self.play_tile()
+            elif choice == 2:
+                self.draw_tile()
+            elif choice == 3:
+                print("Game ended.")
+                break
+            else:
+                print("Invalid choice. Please try again.")
+
+    def play_tile(self):
+        print("Select a tile to play:")
+        self.display_hand()
+        tile_index = int(input("Enter the index of the tile you want to play: ")) - 1
+        tile = self.players[self.current_player].pop(tile_index)
+        print("Select a row to play the tile:")
+        self.display_board()
+        row_index = int(input("Enter the row index: ")) - 1
+        self.board[row_index].append(tile)
+        self.current_player = (self.current_player + 1) % len(self.players)
+
+    def draw_tile(self):
+        print("Drawing a tile...")
+        if len(self.tiles) > 0:
+            tile = self.tiles.pop()
+            print("You drew:", tile)
+            self.players[self.current_player].append(tile)
+        else:
+            print("No more tiles to draw.")
+        self.current_player = (self.current_player + 1) % len(self.players)
+
+game = RummikubGame()
+game.start_game()
+game.play()
